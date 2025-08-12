@@ -1,79 +1,77 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@kit/ui/card';
 import { Button } from '@kit/ui/button';
-import { Badge } from '@kit/ui/badge';
-import { MessageCircle, Phone, Users } from 'lucide-react';
-
-import { WhatsAppSession, WhatsAppConversation } from '~/lib/whatsapp/types';
-import { ConversationList } from './conversation-list';
-import { ChatWindow } from './chat-window';
+import { MessageCircle } from 'lucide-react';
 
 interface ChatContainerProps {
   userId: string;
 }
 
+// Mock data for now to avoid API issues
+const mockConversations = [
+  {
+    id: '1',
+    chatId: 'chat1',
+    contactName: 'John Doe',
+    contactNumber: '+1234567890',
+    isGroup: false,
+    lastMessageAt: new Date().toISOString(),
+    unreadCount: 2,
+  },
+  {
+    id: '2',
+    chatId: 'chat2',
+    contactName: 'Jane Smith',
+    contactNumber: '+0987654321',
+    isGroup: false,
+    lastMessageAt: new Date().toISOString(),
+    unreadCount: 0,
+  },
+];
+
+const mockMessages = [
+  {
+    id: '1',
+    messageId: 'msg1',
+    fromNumber: '+1234567890',
+    toNumber: '+1111111111',
+    messageType: 'text' as const,
+    content: 'Hello! How are you?',
+    isFromMe: false,
+    timestamp: new Date().toISOString(),
+  },
+  {
+    id: '2',
+    messageId: 'msg2',
+    fromNumber: '+1111111111',
+    toNumber: '+1234567890',
+    messageType: 'text' as const,
+    content: 'Hi! I am doing great, thanks for asking!',
+    isFromMe: true,
+    timestamp: new Date().toISOString(),
+  },
+];
+
 export function ChatContainer({ userId }: ChatContainerProps) {
-  const [selectedConversation, setSelectedConversation] = useState<WhatsAppConversation | null>(null);
-  const [selectedSession, setSelectedSession] = useState<WhatsAppSession | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<string | undefined>();
 
-  // Fetch sessions
-  const { data: sessionsData, isLoading: sessionsLoading } = useQuery({
-    queryKey: ['whatsapp-sessions'],
-    queryFn: async () => {
-      const response = await fetch('/api/whatsapp/session/status');
-      if (!response.ok) {
-        throw new Error('Failed to fetch sessions');
-      }
-      return response.json();
-    },
-  });
+  const handleSendMessage = (message: string) => {
+    console.log('Sending message:', message);
+    // TODO: Implement actual message sending
+  };
 
-  // Fetch conversations for selected session
-  const { data: conversationsData, isLoading: conversationsLoading } = useQuery({
-    queryKey: ['whatsapp-conversations', selectedSession?.id],
-    queryFn: async () => {
-      if (!selectedSession?.id) return { conversations: [] };
-      
-      const response = await fetch(`/api/whatsapp/conversations?sessionId=${selectedSession.id}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch conversations');
-      }
-      return response.json();
-    },
-    enabled: !!selectedSession?.id,
-  });
+  const selectedConversationData = mockConversations.find(c => c.id === selectedConversation);
 
-  const sessions: WhatsAppSession[] = sessionsData?.sessions || [];
-  const conversations: WhatsAppConversation[] = conversationsData?.conversations || [];
-  const connectedSessions = sessions.filter(session => session.status === 'connected');
-
-  // Auto-select first connected session
-  useEffect(() => {
-    if (connectedSessions.length > 0 && !selectedSession) {
-      setSelectedSession(connectedSessions[0]);
-    }
-  }, [connectedSessions, selectedSession]);
-
-  if (sessionsLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">Loading sessions...</p>
-      </div>
-    );
-  }
-
-  if (connectedSessions.length === 0) {
-    return (
-      <Card className="h-64">
+  return (
+    <div className="flex flex-col h-full space-y-4">
+      <Card>
         <CardHeader className="text-center">
           <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-          <CardTitle>No Connected Sessions</CardTitle>
+          <CardTitle>WhatsApp Chat</CardTitle>
           <CardDescription>
-            You need to connect a WhatsApp session before you can view conversations.
+            Connect your WhatsApp to start managing conversations
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center">
@@ -82,58 +80,35 @@ export function ChatContainer({ userId }: ChatContainerProps) {
           </Button>
         </CardContent>
       </Card>
-    );
-  }
 
-  return (
-    <div className="flex flex-col h-full space-y-4">
-      {/* Session Selector */}
-      {connectedSessions.length > 1 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Select WhatsApp Session</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {connectedSessions.map((session) => (
-                <Button
-                  key={session.id}
-                  variant={selectedSession?.id === session.id ? 'default' : 'outline'}
-                  onClick={() => setSelectedSession(session)}
-                  className="flex items-center gap-2"
-                >
-                  <Phone className="w-4 h-4" />
-                  {session.session_name}
-                  {session.phone_number && (
-                    <Badge variant="secondary" className="ml-2">
-                      {session.phone_number}
-                    </Badge>
-                  )}
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Chat Interface */}
+      {/* Chat Interface Placeholder */}
       <div className="flex flex-1 gap-4 min-h-0">
-        {/* Conversations List */}
         <div className="w-1/3 min-w-[300px]">
-          <ConversationList
-            conversations={conversations}
-            selectedConversation={selectedConversation}
-            onSelectConversation={setSelectedConversation}
-            isLoading={conversationsLoading}
-          />
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle className="text-lg">Conversations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground text-center py-8">
+                No conversations available. Connect WhatsApp first.
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Chat Window */}
         <div className="flex-1">
-          <ChatWindow
-            conversation={selectedConversation}
-            sessionId={selectedSession?.id}
-          />
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle className="text-lg">Chat</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-center h-64">
+                <p className="text-muted-foreground">
+                  Select a conversation to start chatting
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
