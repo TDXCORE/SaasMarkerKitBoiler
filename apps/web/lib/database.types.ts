@@ -70,6 +70,150 @@ export type Database = {
         };
         Relationships: [];
       };
+      whatsapp_conversations: {
+        Row: {
+          id: string;
+          session_id: string;
+          chat_id: string;
+          contact_name: string | null;
+          contact_number: string | null;
+          is_group: boolean | null;
+          last_message_at: string | null;
+          unread_count: number | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          chat_id: string;
+          contact_name?: string | null;
+          contact_number?: string | null;
+          is_group?: boolean | null;
+          last_message_at?: string | null;
+          unread_count?: number | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          chat_id?: string;
+          contact_name?: string | null;
+          contact_number?: string | null;
+          is_group?: boolean | null;
+          last_message_at?: string | null;
+          unread_count?: number | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'whatsapp_conversations_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'whatsapp_sessions';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      whatsapp_messages: {
+        Row: {
+          id: string;
+          conversation_id: string;
+          message_id: string;
+          from_number: string | null;
+          to_number: string | null;
+          message_type: string | null;
+          content: string | null;
+          media_url: string | null;
+          is_from_me: boolean | null;
+          timestamp: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          conversation_id: string;
+          message_id: string;
+          from_number?: string | null;
+          to_number?: string | null;
+          message_type?: string | null;
+          content?: string | null;
+          media_url?: string | null;
+          is_from_me?: boolean | null;
+          timestamp?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          conversation_id?: string;
+          message_id?: string;
+          from_number?: string | null;
+          to_number?: string | null;
+          message_type?: string | null;
+          content?: string | null;
+          media_url?: string | null;
+          is_from_me?: boolean | null;
+          timestamp?: string | null;
+          created_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'whatsapp_messages_conversation_id_fkey';
+            columns: ['conversation_id'];
+            isOneToOne: false;
+            referencedRelation: 'whatsapp_conversations';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      whatsapp_sessions: {
+        Row: {
+          id: string;
+          account_id: string;
+          session_name: string;
+          phone_number: string | null;
+          qr_code: string | null;
+          status: string | null;
+          session_data: Json | null;
+          last_connected_at: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          account_id: string;
+          session_name: string;
+          phone_number?: string | null;
+          qr_code?: string | null;
+          status?: string | null;
+          session_data?: Json | null;
+          last_connected_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          account_id?: string;
+          session_name?: string;
+          phone_number?: string | null;
+          qr_code?: string | null;
+          status?: string | null;
+          session_data?: Json | null;
+          last_connected_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'whatsapp_sessions_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'accounts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;

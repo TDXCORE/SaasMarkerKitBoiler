@@ -1,4 +1,4 @@
-import { Home, User } from 'lucide-react';
+import { Home, User, MessageCircle, Settings } from 'lucide-react';
 import { z } from 'zod';
 
 import { NavigationConfigSchema } from '@kit/ui/navigation-schema';
@@ -17,6 +17,11 @@ const routes = [
         Icon: <Home className={iconClasses} />,
         end: true,
       },
+      {
+        label: 'WhatsApp Chat',
+        path: '/home/chat',
+        Icon: <MessageCircle className={iconClasses} />,
+      },
     ],
   },
   {
@@ -26,6 +31,11 @@ const routes = [
         label: 'common:routes.profile',
         path: pathsConfig.app.profileSettings,
         Icon: <User className={iconClasses} />,
+      },
+      {
+        label: 'WhatsApp Settings',
+        path: '/home/settings/whatsapp',
+        Icon: <Settings className={iconClasses} />,
       },
     ],
   },
